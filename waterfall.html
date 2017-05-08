@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<script type="text/javascript" src="js/jquery-2.0.3.js" ></script>
+		<style>
+			*{padding:0;margin:0}
+			/*瀑布流布局样式*/
+		#box { position: relative; width: 1000px; margin:0 auto;}
+		#box ul{overflow: hidden;}
+		#box li { list-style:none;background: #fff; border: solid 1px #ccc; text-align: center; padding: 10px; float: left;margin:10px;}
+		img { width: 200px; height: auto; display: block; border: 0 }
+		.clearfix:after{content:''; display: block; clear:both;}
+		.tips{ width: 280px;
+        height: 40px;
+        margin: 30px auto 0;
+        text-align: center;
+        line-height: 40px;
+        background-color: #CCC;
+        border-radius: 6px;
+        font-size: 16px;
+        cursor: pointer;
+        position: fixed;
+        bottom: 0px;
+        left: 50%;
+        margin-left: -140px;
+        opacity: 0;
+        color: #666;}	
+        .tips .loading{ background-color: #dadada;}
+        
+		</style>
+	</head>
+	<body style="height:100%">
+		<div class="box" id="box">
+			<ul class="clearfix">
+				<li><img src="img/feng1.jpg"/> </li>
+				<li><img src="img/feng2.jpg" /> </li>
+				<li><img src="img/feng3.jpg" /> </li>
+				<li><img src="img/feng4.jpg" /> </li>
+				<li><img src="img/feng5.jpg" /> </li>
+				<li><img src="img/feng6.jpg" /> </li>
+				<li><img src="img/feng7.jpg" /> </li>
+				<li><img src="img/feng8.jpg" /> </li>
+				<li><img src="img/feng9.jpg" /> </li>
+				<li><img src="img/feng10.jpg" /> </li>
+				<li><img src="img/feng8.jpg" /> </li>
+				<li><img src="img/feng2.jpg" /> </li>
+				<li><img src="img/feng10.jpg" /> </li>
+				<li><img src="img/feng1.jpg" /> </li>
+				<li><img src="img/feng8.jpg" /> </li>
+				<li><img src="img/feng6.jpg" /> </li>
+				<li><img src="img/feng2.jpg" /> </li>
+				<li><img src="img/feng5.jpg" /> </li>
+				<li><img src="img/feng4.jpg" /> </li>
+				<li><img src="img/feng3.jpg" /> </li>
+				<li><img src="img/feng9.jpg" /> </li>
+				<li><img src="img/feng10.jpg" /> </li>
+				
+				
+			</ul>
+			
+			<div class="tips loading ">正在加载</div>
+		</div>
+		
+		
+	</body>
+</html>
+<script>
+	/*
+	/*这里一定要用onload,因为图片不加载完就不知道高度值*/
+	window.onload = function() {puwater()};
+	window.onresize = function() {puwater()}; /*浏览器窗口改变时也运行函数*/
+	var data=[
+			{"src":"1.jpg"},
+			{"src":"2.jpg"},
+			{"src":"3.jpg"},
+			{"src":"4.jpg"},
+			{"src":"5.jpg"},
+			{"src":"6.jpg"},
+			{"src":"7.jpg"},
+			{"src":"8.jpg"},
+			{"src":"9.jpg"},
+			{"src":"10.jpg"}
+	]
+	function puwater(){
+		
+	
+	var box=document.getElementById("box");
+	var margin=10;
+	var li=$("#box ul li");
+	var h=[];
+	var li_w=li[0].offsetWidth+margin;  //获取区块的宽度
+	//console.log(li_w);
+	li.css("position","absolute"); 
+	//设置一行能放多少个li
+	var n=Math.floor(box.offsetWidth/li_w);
+	//console.log(n);
+
+	
+	for(var i=0;i<li.length;i++){
+	   var li_h=li[i].offsetHeight+margin;   //获取每个li的高度值
+	//   console.log(li_h)
+	    if(i<n){           //当i<n时 就是在第一行
+		  h[i]=li_h          //记录当前li的高度
+	 //  console.log(h[i])
+		 li.eq(i).css("top",0);   //设置left 和top值
+		 li.eq(i).css("left",li_w*i+"px");
+		}else{
+		  min_h=Math.min.apply(null,h);  //获取数组中最小的高度
+		 // console.log(min_h)
+		  var s=h.indexOf(min_h)  //获取最小值的索引
+		  h[s]+=li_h+margin;    //重新获取高度
+		//  console.log(h[s]);
+		  li.eq(i).css("left",s*li_w)  //设置left的值跟top的值
+		  li.eq(i).css("top",min_h+margin)
+		}
+	}
+}
+	//判断滚动到最底部
+	function Tobottom(){
+		var win_h=$(window).height();
+		console.log(win_h)
+		var scroll_Top=$(document).scrollTop();
+		console.log(scroll_Top)
+		var last_Top=$("#box ul li:last-child").offset().top+100;
+		console.log(last_Top)
+		if(win_h+scroll_Top>last_Top){
+			return true;
+		}else{
+			return false
+		}
+	}
+	
+	//根据是否到达底部来无线加载
+	$(window).on("scroll",function(){
+		if(Tobottom()){
+			$("#box .tips").css("opacity",1);
+			for( var z in data){
+				var html="<li><img src='img/feng"+data[z].src+"'/></li>"
+				$("#box ul").append(html)
+				puwater()
+			}
+		}else{
+			$("#box .tips").css("opacity",0);
+		}
+	})
+</script>
